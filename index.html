@@ -166,6 +166,8 @@
             width: 300px;
             padding: 5px;
             border-bottom: 1px solid #fdb6b6;
+            transition: background-color 0.3s ease, border 0.3s ease;
+            
         }
 
         .team-member input {
@@ -255,27 +257,12 @@
             border-radius: 10px;
         }
 
-        .team-member {
-            transition: background-color 0.3s ease, border 0.3s ease;
+        .team-member:active {
+            background-color: transparent !important; /* 클릭할 때 회색 되는 것 방지 */
         }
 
-                /* 팀 1 - 선택된 멤버 색상 */
-        .team:nth-child(1) .team-member[data-selected="true"] {
-            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
-            border: 2px solid #fd7e7e;
-        }
-
-        /* 팀 2 - 선택된 멤버 색상 */
-        .team:nth-child(2) .team-member[data-selected="true"] {
-            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
-            border: 2px solid #fd7e7e;
-        }
-
-        /* 팀 3 - 선택된 멤버 색상 */
-        .team:nth-child(3) .team-member[data-selected="true"] {
-            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
-            border: 2px solid #fd7e7e;
-        }
+        
+       
 
     </style>
 </head>
@@ -429,16 +416,22 @@
         function selectMember(member) {
             if (member.dataset.selected === "true") return;
             document.querySelectorAll(".team-member").forEach(m => m.style.backgroundColor = "");
-            member.style.backgroundColor = "lightgray";
+            document.querySelectorAll('.team-member').forEach(el => {
+                el.style.backgroundColor = ''; // 기존 스타일로 복원
+                el.style.border = '';
+            });
+
+            // 클릭한 멤버 스타일 적용
+            member.style.backgroundColor = 'rgba(253, 126, 126, 0.8)'; 
+            member.style.border = '2px solid #fd7e7e';
+
             selectedMember = member;
             document.getElementById("spinButton").disabled = false;
 
             if (!memberExcludedChampions[selectedMember.dataset.name]) {
                  memberExcludedChampions[selectedMember.dataset.name] = [];
             }   
-        }
-        
-        function selectMember(element) {
+
             // 현재 클릭한 멤버가 속한 팀 찾기
             const team = element.closest(".team");
 
@@ -449,17 +442,12 @@
 
             // 클릭한 멤버만 선택 상태로 변경
             element.setAttribute("data-selected", "true");
-
-            // 팀별로 다른 색상 적용
-            if (team.classList.contains("team-1")) {
-                element.style.backgroundColor = "rgba(255, 99, 71, 0.6)"; // 빨간색
-            } else if (team.classList.contains("team-2")) {
-                element.style.backgroundColor = "rgba(65, 105, 225, 0.6)"; // 파란색
-            } else if (team.classList.contains("team-3")) {
-                element.style.backgroundColor = "rgba(34, 139, 34, 0.6)"; // 초록색
-            }
+            
+            
+        
         }
-
+        
+      
         function addExcludedChampion() {
             if (!selectedMember) {
                 alert("먼저 멤버를 선택하세요!");
