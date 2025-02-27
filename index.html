@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>슬롯 머신</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column; /* 위에서 아래로 배치 */
+            justify-content: flex-start; /* 위쪽 정렬 */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('칼바람.webp'); /* 배경 이미지 */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8; /* 배경 이미지 투명도 설정 (0은 완전 투명, 1은 불투명) */
+            z-index: -1; /* 다른 콘텐츠 위에 배경이 오도록 설정 */
+        }
+        /* 슬롯 머신과 팀 테이블을 가로로 배치하는 컨테이너 */
+        .main-container {
+            display: flex;
+            justify-content: center; /* 가운데 정렬 */
+            align-items: flex-start; /* 위쪽 정렬 */
+            gap: 100px; /* 슬롯 머신과 팀 테이블 사이 간격 */
+            margin-top: 200px; /* 로고 아래로 공간 확보 */
+        }    
+
+       .body1 {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 중앙 정렬 */
+        }
+
+        h1 {
+            text-align: left; /* 기본적으로 왼쪽 정렬 */
+            margin-left: 50px; /* 왼쪽 마진을 추가해서 오른쪽으로 이동 */
+        }
+
+        .slot-machine {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 600px;
+            height: 150px;
+            border: 10px solid #333;
+            border-radius: 15px;
+            background-color: #222;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slot {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;  /* 이미지가 슬롯 안에서 정확히 중앙에 위치하도록 */
+            flex-direction: column;
+            position: relative;
+            background-color: #fff;
+            border: 3px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;  /* 테두리 크기도 전체 크기에 포함되도록 설정 */
+        }
+
+        .slot img {
+            width: 100%;
+            height: 100%;  /* 이미지가 슬롯 크기에 맞게 꽉 채워지도록 */
+            object-fit: cover;  /* 이미지가 슬롯 안에 꽉 차도록 보정 */
+            margin: 0;  /* 이미지의 margin을 없애면 겹침 방지 */
+            border: none;  /* 이미지에 테두리가 없도록 설정 */
+        }
+
+        button {
+            display: block;
+            margin: 20px auto 0 200px; /* 왼쪽 정렬 유지하면서 슬롯 아래 배치 */
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            writing-mode: horizontal-tb; 
+            width: 200px; /* 슬롯 돌리기 버튼과 동일한 너비 */
+            height: 50px; /* 동일한 높이 */
+        }
+
+        button:hover {
+            background-color: #e67e22;
+        }
+
+        img {
+            display: block;
+            margin: 0 auto;  /* 좌우 중앙 정렬 */
+            max-width: 150px;  /* 적절한 크기로 제한 */
+            height: auto;
+        }
+
+       .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .logo-container img {
+            width: 150px;
+            height: 150px;
+            clip-path: inset(15px round 30px); /* 모든 모서리를 둥글게 만들기 */
+        }
+
+        .logo-container img:first-child {
+            margin-right: -1px; /* 첫 번째 이미지를 왼쪽으로 당김 */
+        }
+
+        .logo-container img:last-child {
+            margin-left: -1px; /* 두 번째 이미지를 오른쪽으로 당김 */
+        }
+
+        /* 오른쪽 영역 스타일 */
+        .teams-container {
+            display: flex;
+            flex-wrap: wrap; /* 두 개의 팀을 가로로 배치하고, 3팀이 아래로 내려가도록 설정 */
+            gap: 20px; /* 팀 간 간격 */
+            justify-content: center; /* 중앙 정렬 */
+            max-width: 700px; /* 너무 넓어지지 않도록 제한 */
+        }
+
+        /* 개별 팀 스타일 */
+        .team {
+            width: 310px; /* 팀 박스 크기 조정 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        /* 개별 팀원 스타일 */
+        .team-member {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 이름과 슬롯 결과를 좌우 배치 */
+            width: 300px;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .team-member input {
+            width: 80px; /* 팀원 입력 칸 크기 줄이기 */
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .slot-result {
+            display: flex;
+            gap: -150px;
+            flex-direction: row; /* 🔥 결과를 가로로 정렬 */
+        }
+
+        /* 슬롯 결과 이미지 스타일 */
+        .team-member img {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        button:disabled{
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        .champion-input {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .champion-input input {
+            width: 60%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background-color: #30d6db75;
+            color: #000000;
+        }
+
+        .champion-input button {
+            padding: 10px 20px; /* 버튼의 패딩 조정 */
+            font-size: 16px; /* 글씨 크기 */
+            cursor: pointer; /* 커서 모양 */
+            background-color: #f39c12; /* 배경색 */
+            color: white; /* 글자 색 */
+            border: none; /* 테두리 없앰 */
+            border-radius: 5px; /* 모서리 둥글게 */
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3); /* 그림자 */
+            writing-mode: horizontal-tb; /* 텍스트 방향 설정 */
+            width: 200px; /* 버튼의 가로 크기 */
+            height: 50px; /* 버튼의 세로 크기 */
+            margin-left: 10px; /* 왼쪽 마진 */
+            margin-top: 5px; /* 위쪽 마진 */
+        }
+
+        .champion-input button:hover {
+            background-color: #e67e22; /* 호버 시 색상 변경 */
+        }
+
+        #champInput::placeholder {
+            color: #ffffff; /* 원하는 색상 코드로 변경 */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="leage Icon.jfif" alt="League Icon">
+        <img src="Logo_Piggy House.webp" alt="Logo Piggy House">
+    </div>
+
+    <div class="main-container">
+        <div class="body1">
+            <h1 style="text-align:center;">롤 챔피언 슬롯 머신</h1>
+            <div class="champion-input">
+                <input type="text" id="champInput" placeholder="챔피언 입력">
+                <button onclick="addExcludedChampion()" style="writing-mode: horizontal-tb;">추가</button>
+            </div>
+            
+            <div class="slot-machine">
+                <div class="slot" id="slot1"></div>
+                <div class="slot" id="slot2"></div>
+                <div class="slot" id="slot3"></div>
+                <div class="slot" id="slot4"></div>
+            </div>
+            
+            <button id="spinButton" onclick="spinSlots()">슬롯 돌리기</button>
+                        
+        </div>
+        <div class="teams-container">
+            <!-- 팀 1 -->
+            <div class="team">
+                <h3>Team 꿀돼지</h3>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 1">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 2" >
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 3" >
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 4" >
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 5" >
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+            </div>
+        
+            <!-- 팀 2 -->
+            <div class="team">
+                <h3>팀 2</h3>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 1">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 2">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 3">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 4">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 5">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+            </div>
+        
+            <!-- 팀 3 -->
+            <div class="team">
+                <h3>팀 3</h3>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 1">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 2">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 3">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 4">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+                <div class="team-member" onclick="selectMember(this)" data-selected="false">
+                    <input type="text" placeholder="팀원 5">
+                    <div class="slot-result"></div>
+                    <div class="excluded-champions"></div> <!-- 제외 챔피언 표시 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let championImages = [];
+        let championNameMap = {};
+        let excludedChampions = []; // 🔥 이전 결과 저장용 전역 변수
+        let selectedChampions = [];
+        let memberExcludedChampions = {}; // 멤버별 제외 챔피언을 저장하는 객체
+        let selectedMember;
+        
+
+        async function fetchChampions() {
+            // 최신 버전 가져오기
+            const versionResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+            const versions = await versionResponse.json();
+            const latestVersion = versions[0]; // 최신 버전 선택
+
+            // 최신 버전의 챔피언 데이터 가져오기
+            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/ko_KR/champion.json`);
+            const data = await response.json();
+            const champions = data.data;
+
+            championImages = Object.keys(champions).map(champion => {
+                championNameMap[champions[champion].name] = champion;
+                return {
+                    name: champion,
+                    koreanName: champions[champion].name,
+                    img: `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion}.png`
+                };
+            });
+        }
+
+        function selectMember(member) {
+            if (member.dataset.selected === "true") return;
+            document.querySelectorAll(".team-member").forEach(m => m.style.backgroundColor = "");
+            member.style.backgroundColor = "lightgray";
+            selectedMember = member;
+            document.getElementById("spinButton").disabled = false;
+
+            if (!memberExcludedChampions[selectedMember.dataset.name]) {
+                 memberExcludedChampions[selectedMember.dataset.name] = [];
+            }   
+        }
+
+        function addExcludedChampion() {
+            if (!selectedMember) {
+                alert("먼저 멤버를 선택하세요!");
+                return;
+            }
+
+            let champName = document.getElementById("champInput").value.trim();
+            if (!champName) return;
+
+            // 챔피언 데이터에서 입력한 챔피언 찾기
+            let champ = championImages.find(c => c.koreanName === champName);
+            if (!champ) {
+                alert("올바른 챔피언 이름을 입력하세요!");
+                return;
+            }
+
+            let memberName = selectedMember.querySelector("input").value;  // 팀원 이름을 가져오기
+            if (!memberName) {
+                alert("팀원 이름을 입력하세요!");
+                return;
+            }
+
+            if (!memberExcludedChampions[memberName]) {
+                memberExcludedChampions[memberName] = [];
+    }
+
+            
+            if (memberExcludedChampions[memberName].length >= 4) {
+                alert("최대 4개까지만 제외할 수 있습니다!");
+                return;
+            }
+
+            // 중복 추가 방지
+            if (memberExcludedChampions[memberName].includes(champ.koreanName)) {
+                alert("이미 추가된 챔피언입니다!");
+                return;
+            }
+
+            // 슬롯 머신에서 나온 챔피언도 제외해야 함
+            if (excludedChampions.includes(champ.koreanName)) {
+                    alert("이 챔피언은 슬롯을 통해서 이미 추가되었습니다!");
+                    return;
+                }
+
+             // 다른 멤버가 이미 제외한 챔피언이 있는지 확인
+            for (const member in memberExcludedChampions) {
+                if (member !== memberName && memberExcludedChampions[member].includes(champ.koreanName)) {
+                    alert("이 챔피언은 다른 멤버에게 이미 선택되었습니다!");
+                    return;
+                }
+            }
+
+            // 멤버별 제외 챔피언 리스트에 추가
+            memberExcludedChampions[memberName].push(champ.koreanName);
+
+            // 멤버 옆에 이미지 추가
+            let resultContainer = selectedMember.querySelector(".excluded-champions");
+
+            // 이미지를 가로로 나열할 수 있도록 스타일 변경
+            resultContainer.style.display = "flex";
+            resultContainer.style.gap = "0px"; // 이미지 사이에 간격을 줄 수 있음
+            let img = document.createElement("img");
+            img.src = champ.img;
+            img.style.width = "40px";
+            img.style.height = "40px";
+            img.style.marginLeft = "10px"; 
+            resultContainer.appendChild(img);
+
+            // 제외된 챔피언을 전역 배열에도 추가하여 슬롯에서 제외
+            excludedChampions.push(champ.koreanName);
+
+            // 입력칸 초기화
+            document.getElementById("champInput").value = "";
+        }
+
+        function getRandomChampion() {
+            let memberName = selectedMember.querySelector("input").value;  // 팀원 이름 가져오기
+            let memberExcluded = memberExcludedChampions[memberName] || [];
+
+            const availableChampions = championImages.filter(champ => 
+                !memberExcluded.includes(champ.koreanName) && !excludedChampions.includes(champ.koreanName)
+            );
+
+            if (availableChampions.length < 4) {
+                excludedChampions.push(...memberExcluded);
+                memberExcludedChampions[memberName] = [];
+                return championImages.sort(() => 0.5 - Math.random()).slice(0, 4);
+            }
+            return availableChampions.sort(() => 0.5 - Math.random()).slice(0, 4);
+        }
+
+        // 슬롯 머신을 돌리고 결과를 화면에 표시하는 함수
+function spinSlots() {
+    if (!selectedMember || championImages.length === 0) return;
+    let slots = document.querySelectorAll(".slot");
+    let spinCount = 20;
+    let results = getRandomChampion();
+
+    function rotate(speed) {
+        slots.forEach(slot => {
+            let randomChamp = championImages[Math.floor(Math.random() * championImages.length)];
+            slot.innerHTML = `<img src="${randomChamp.img}" alt="${randomChamp.koreanName}">`;
+        });
+        if (spinCount > 0) {
+            spinCount--;
+            setTimeout(() => rotate(speed * 1.1), speed);
+        } else {
+            slots.forEach((slot, index) => {
+                slot.innerHTML = `<img src="${results[index].img}" alt="${results[index].koreanName}">`;
+            });
+            let resultContainer = selectedMember.querySelector(".slot-result");
+            resultContainer.innerHTML = "";
+            results.forEach(champ => {
+                let img = document.createElement("img");
+                img.src = champ.img;
+                img.style.width = "40px";
+                img.style.height = "40px";
+                resultContainer.appendChild(img);
+            });
+
+            excludedChampions.push(...results.map(champ => champ.koreanName));  // 슬롯 결과 챔피언 제외 목록에 추가
+            selectedMember.dataset.selected = "true";
+            selectedMember.style.pointerEvents = "none";
+            selectedMember.style.backgroundColor = "#ddd";
+            document.getElementById("spinButton").disabled = true;
+        }
+    }
+    rotate(50);
+}
+
+        fetchChampions();
+    </script>
+</body>
+</html>
