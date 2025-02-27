@@ -165,13 +165,18 @@
             justify-content: space-between; /* 이름과 슬롯 결과를 좌우 배치 */
             width: 300px;
             padding: 5px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #fdb6b6;
         }
 
         .team-member input {
             width: 80px; /* 팀원 입력 칸 크기 줄이기 */
             padding: 5px;
             font-size: 14px;
+            background-color: #FFE4E1; /* 연한 핑크 배경 */
+            border: 2px solid #fa8fc4; /* 진한 핑크 테두리 */
+            border-radius: 8px; /* 모서리를 둥글게 */
+            padding: 5px; /* 내부 여백 */
+            text-align: center; /* 글자 중앙 정렬 */
         }
 
         .slot-result {
@@ -229,6 +234,47 @@
 
         #champInput::placeholder {
             color: #ffffff; /* 원하는 색상 코드로 변경 */
+        }
+
+        /* 팀별 배경 색 */
+        .team:nth-child(1) {
+            background-color: rgb(255, 192, 203, 0.5); /* 팀 1 - 연한 빨간색 */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .team:nth-child(2) {
+            background-color: rgba(247, 167, 180, 0.5); /* 팀 2 - 연한 파란색 */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .team:nth-child(3) {
+            background-color: rgba(253, 128, 149, 0.5);; /* 팀 3 - 연한 초록색 */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .team-member {
+            transition: background-color 0.3s ease, border 0.3s ease;
+        }
+
+                /* 팀 1 - 선택된 멤버 색상 */
+        .team:nth-child(1) .team-member[data-selected="true"] {
+            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
+            border: 2px solid #fd7e7e;
+        }
+
+        /* 팀 2 - 선택된 멤버 색상 */
+        .team:nth-child(2) .team-member[data-selected="true"] {
+            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
+            border: 2px solid #fd7e7e;
+        }
+
+        /* 팀 3 - 선택된 멤버 색상 */
+        .team:nth-child(3) .team-member[data-selected="true"] {
+            background-color: rgba(253, 126, 126, 0.514); /* 빨간색 계열 */
+            border: 2px solid #fd7e7e;
         }
 
     </style>
@@ -290,7 +336,7 @@
         
             <!-- 팀 2 -->
             <div class="team">
-                <h3>팀 2</h3>
+                <h3>Team 꽃돼지</h3>
                 <div class="team-member" onclick="selectMember(this)" data-selected="false">
                     <input type="text" placeholder="팀원 1">
                     <div class="slot-result"></div>
@@ -320,7 +366,7 @@
         
             <!-- 팀 3 -->
             <div class="team">
-                <h3>팀 3</h3>
+                <h3>Team 꿈돼지</h3>
                 <div class="team-member" onclick="selectMember(this)" data-selected="false">
                     <input type="text" placeholder="팀원 1">
                     <div class="slot-result"></div>
@@ -390,6 +436,28 @@
             if (!memberExcludedChampions[selectedMember.dataset.name]) {
                  memberExcludedChampions[selectedMember.dataset.name] = [];
             }   
+        }
+        
+        function selectMember(element) {
+            // 현재 클릭한 멤버가 속한 팀 찾기
+            const team = element.closest(".team");
+
+            // 모든 멤버의 선택 해제
+            document.querySelectorAll(".team-member").forEach(member => {
+                member.setAttribute("data-selected", "false");
+            });
+
+            // 클릭한 멤버만 선택 상태로 변경
+            element.setAttribute("data-selected", "true");
+
+            // 팀별로 다른 색상 적용
+            if (team.classList.contains("team-1")) {
+                element.style.backgroundColor = "rgba(255, 99, 71, 0.6)"; // 빨간색
+            } else if (team.classList.contains("team-2")) {
+                element.style.backgroundColor = "rgba(65, 105, 225, 0.6)"; // 파란색
+            } else if (team.classList.contains("team-3")) {
+                element.style.backgroundColor = "rgba(34, 139, 34, 0.6)"; // 초록색
+            }
         }
 
         function addExcludedChampion() {
